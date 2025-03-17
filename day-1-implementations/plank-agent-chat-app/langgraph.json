@@ -9,7 +9,8 @@
     "research_agent": "./apps/agents/src/research-agent/retrieval-graph/graph.ts:graph",
     "research_index_graph": "./apps/agents/src/research-agent/index-graph/graph.ts:graph",
     "retrieval_agent": "./apps/agents/src/retrieval-agent/graph.ts:graph",
-    "prompt_chaining": "./apps/agents/src/prompt-chaining/graph.ts:graph"
+    "prompt_chaining": "./apps/agents/src/prompt-chaining/graph.ts:graph",
+    "parallelization": "./apps/agents/src/parallelization/graph.ts:graph"
   },
   "env": ".env"
 }
