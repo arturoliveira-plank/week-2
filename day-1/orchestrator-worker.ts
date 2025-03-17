@@ -87,6 +87,8 @@ const orchestratorWorker = new StateGraph(StateAnnotation)
   .addNode("llmCall", llmCall)
   .addNode("synthesizer", synthesizer)
   .addEdge("__start__", "orchestrator")
+  // Add conditional edges from the "orchestrator" node to the "llmCall" node.
+  // The "assignWorkers" function determines the specific edges to create based on the state.
   .addConditionalEdges(
     "orchestrator",
     assignWorkers,
