@@ -17,7 +17,8 @@
     "day-2 fan-out-fan-in": "./apps/agents/src/day-2/branching/fan-out-fan-in/graph.ts:graph",
     "day-2 conditional-branching": "./apps/agents/src/day-2/branching/conditional-branching/graph.ts:graph",
     "day-2 stable-sorting": "./apps/agents/src/day-2/branching/stable-sorting/graph.ts:graph",
-    "day-2 map-reduce": "./apps/agents/src/day-2/map-reduce/map-reduce/graph.ts:graph"
+    "day-2 map-reduce": "./apps/agents/src/day-2/map-reduce/map-reduce/graph.ts:graph",
+    "day-2 command": "./apps/agents/src/day-2/command/command/graph.ts:graph"
   },
   "env": ".env"
 }
