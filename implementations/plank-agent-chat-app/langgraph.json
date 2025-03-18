@@ -15,8 +15,8 @@
     "day-1 orchestrator_worker": "./apps/agents/src/day-1/orchestrator-worker/graph.ts:graph",
     "day-1 evaluator-optimizer": "./apps/agents/src/day-1/evaluator-optimizer/graph.ts:graph",
     "day-2 fan-out-fan-in": "./apps/agents/src/day-2/fan-out-fan-in/graph.ts:graph",
-    "day-2 conditional-branching": "./apps/agents/src/day-2/conditional-branching/graph.ts:graph"
-
+    "day-2 conditional-branching": "./apps/agents/src/day-2/conditional-branching/graph.ts:graph",
+    "day-2 stable-sorting": "./apps/agents/src/day-2/stable-sorting/graph.ts:graph"
   },
   "env": ".env"
 }
