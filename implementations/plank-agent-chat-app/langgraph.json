@@ -20,7 +20,8 @@
     "day-2 map-reduce": "./apps/agents/src/day-2/map-reduce/map-reduce/graph.ts:graph",
     "day-2 command": "./apps/agents/src/day-2/command/command/graph.ts:graph",
     "day-2 to-parent-graph": "./apps/agents/src/day-2/command/to-parent-graph/graph.ts:graph",
-    "day-2 recursion-limit": "./apps/agents/src/day-2/recursion-limit/graph.ts:graph"
+    "day-2 recursion-limit": "./apps/agents/src/day-2/recursion-limit/loops/graph.ts:graph",
+    "day-2 loops-with-branches": "./apps/agents/src/day-2/recursion-limit/loops-with-branches/graph.ts:graph"
   },
   "env": ".env"
 }
