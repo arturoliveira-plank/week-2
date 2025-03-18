@@ -9,11 +9,12 @@
     "research_agent": "./apps/agents/src/research-agent/retrieval-graph/graph.ts:graph",
     "research_index_graph": "./apps/agents/src/research-agent/index-graph/graph.ts:graph",
     "retrieval_agent": "./apps/agents/src/retrieval-agent/graph.ts:graph",
-    "prompt_chaining": "./apps/agents/src/prompt-chaining/graph.ts:graph",
-    "parallelization": "./apps/agents/src/parallelization/graph.ts:graph",
-    "routing": "./apps/agents/src/routing/graph.ts:graph",
-    "orchestrator_worker": "./apps/agents/src/orchestrator-worker/graph.ts:graph",
-    "evaluator-optimizer": "./apps/agents/src/evaluator-optimizer/graph.ts:graph"
+    "day-1 prompt_chaining": "./apps/agents/src/day-1/prompt-chaining/graph.ts:graph",
+    "day-1 parallelization": "./apps/agents/src/day-1/parallelization/graph.ts:graph",
+    "day-1 routing": "./apps/agents/src/day-1/routing/graph.ts:graph",
+    "day-1 orchestrator_worker": "./apps/agents/src/day-1/orchestrator-worker/graph.ts:graph",
+    "day-1 evaluator-optimizer": "./apps/agents/src/day-1/evaluator-optimizer/graph.ts:graph",
+    "day-2 fan-out-fan-in": "./apps/agents/src/day-2/fan-out-fan-in/graph.ts:graph"
 
   },
   "env": ".env"
