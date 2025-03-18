@@ -25,16 +25,16 @@ const nodeD = (state: typeof StateAnnotation.State) => {
 };
 
 const builder = new StateGraph(StateAnnotation)
-  .addNode("a", nodeA)
-  .addEdge(START, "a")
-  .addNode("b", nodeB)
-  .addNode("c", nodeC)
-  .addNode("d", nodeD)
-  .addEdge("a", "b")
-  .addEdge("a", "c")
-  .addEdge("b", "d")
-  .addEdge("c", "d")
-  .addEdge("d", END);
+  .addNode("a", nodeA)       // Add node A
+  .addEdge(START, "a")       // Start → A
+  .addNode("b", nodeB)       // Add node B
+  .addNode("c", nodeC)       // Add node C
+  .addNode("d", nodeD)       // Add node D
+  .addEdge("a", "b")         // A → B
+  .addEdge("a", "c")         // A → C (this creates the fan-out)
+  .addEdge("b", "d")         // B → D
+  .addEdge("c", "d")         // C → D (this is the fan-in)
+  .addEdge("d", END);        // D → End
 
 const graph = builder.compile();
 
