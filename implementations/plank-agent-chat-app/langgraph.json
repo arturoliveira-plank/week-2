@@ -12,7 +12,9 @@
     "prompt_chaining": "./apps/agents/src/prompt-chaining/graph.ts:graph",
     "parallelization": "./apps/agents/src/parallelization/graph.ts:graph",
     "routing": "./apps/agents/src/routing/graph.ts:graph",
-    "orchestrator_worker": "./apps/agents/src/orchestrator-worker/graph.ts:graph"
+    "orchestrator_worker": "./apps/agents/src/orchestrator-worker/graph.ts:graph",
+    "evaluator-optimizer": "./apps/agents/src/evaluator-optimizer/graph.ts:graph"
+
   },
   "env": ".env"
 }
