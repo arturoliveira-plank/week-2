@@ -1,14 +1,15 @@
 import llm from "./llm-call";
 import { tools } from "./tools";
 import { AIMessage, HumanMessage } from "@langchain/core/messages";
-import { END, START, StateGraph, MemorySaver } from "@langchain/langgraph";
+import { END, START, StateGraph } from "@langchain/langgraph";
 import { RunnableConfig } from "@langchain/core/runnables";
 import { GraphState } from "./state";
 import { ToolNode } from "@langchain/langgraph/prebuilt";
+import { checkpointer } from "./postgres";
 
 export const boundModel = llm.bindTools(tools);
 
-const memory = new MemorySaver();
+//const memory = new MemorySaver();
 
 const routeMessage = (state: typeof GraphState.State) => {
   const { messages } = state;
@@ -37,4 +38,4 @@ const workflow = new StateGraph(GraphState)
   .addConditionalEdges("agent", routeMessage)
   .addEdge("tools", "agent");
 
-export const graph = workflow.compile({ checkpointer: memory });
+export const graph = workflow.compile({ checkpointer: checkpointer });
