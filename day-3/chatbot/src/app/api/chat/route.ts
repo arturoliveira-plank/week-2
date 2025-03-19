@@ -12,7 +12,7 @@ export const POST = async (req: Request) => {
       );
     }
 
-    const result = await processMessage([message]);
+    const result = await processMessage(message);
     return NextResponse.json(result);
   } catch (error) {
     console.error('Error in chat route:', error);
