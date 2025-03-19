@@ -45,7 +45,7 @@ export default function Chat() {
       const newMessages: Message[] = [
         ...(state.messages || []),
         { role: 'user' as const, content: state.currentMessage },
-        { role: 'assistant' as const, content: data.messages[0].kwargs.content }
+        { role: 'assistant' as const, content: data.messages[data.messages.length - 1].kwargs.content }
       ];
 
       setState(prev => ({

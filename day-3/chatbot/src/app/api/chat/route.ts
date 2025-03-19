@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
-import { processMessage } from '@/agent/graph';
-
+import { graph } from '@/agent/graph';
+import { GraphState } from '@/agent/state';
+import { HumanMessage } from '@langchain/core/messages';
+import { v4 as uuidv4 } from 'uuid';
 export const POST = async (req: Request) => {
   try {
     const { message } = await req.json();
@@ -12,8 +14,15 @@ export const POST = async (req: Request) => {
       );
     }
 
-    const result = await processMessage(message);
-    return NextResponse.json(result);
+    const result = await graph.invoke({
+      messages: [new HumanMessage(message)],
+    }, {
+      configurable: {
+        thread_id: uuidv4(),
+      },
+    });
+    const aiMessage = result;
+    return NextResponse.json(aiMessage);
   } catch (error) {
     console.error('Error in chat route:', error);
     return NextResponse.json(
