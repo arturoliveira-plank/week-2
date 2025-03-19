@@ -1,15 +1,18 @@
 import { NextResponse } from 'next/server';
-import { processMessage } from '@/lib/workflow';
+import { processMessage } from '@/agent/graph';
 
-export async function POST(req: Request) {
+export const POST = async (req: Request) => {
   try {
-    const { messages, currentMessage } = await req.json();
+    const { message } = await req.json();
 
-    const result = await processMessage({
-      messages,
-      currentMessage,
-    });
+    if (!message || typeof message !== 'string') {
+      return NextResponse.json(
+        { error: 'Message is required and must be a string' },
+        { status: 400 }
+      );
+    }
 
+    const result = await processMessage(message);
     return NextResponse.json(result);
   } catch (error) {
     console.error('Error in chat route:', error);
@@ -18,4 +21,4 @@ export async function POST(req: Request) {
       { status: 500 }
     );
   }
-} 
+}; 
