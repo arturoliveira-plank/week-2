@@ -54,6 +54,8 @@ export default function Chat() {
         currentMessage: '',
         isLoading: false,
       }));
+
+      setTimeout(scrollToBottom, 100);
     } catch (error) {
       console.error('Error sending message:', error);
       setState(prev => ({ ...prev, isLoading: false }));
@@ -61,8 +63,8 @@ export default function Chat() {
   };
 
   return (
-    <div className="flex flex-col h-screen max-w-4xl mx-auto p-4">
-      <div className="flex-1 overflow-y-auto mb-4 space-y-4">
+    <div className="flex flex-col h-[calc(100%-4rem)] w-full max-w-4xl mx-auto">
+      <div className="flex-1 overflow-y-auto space-y-4">
         {(state.messages || []).map((message, index) => (
           <div
             key={index}

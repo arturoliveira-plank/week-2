@@ -18,7 +18,7 @@ export const POST = async (req: Request) => {
       messages: [new HumanMessage(message)],
     }, {
       configurable: {
-        thread_id: uuidv4(),
+        thread_id: "123",
       },
     });
     const aiMessage = result;
