@@ -19,6 +19,8 @@ const addMemories = async (
 ) => {
   const store = config.store as InMemoryStore;
 
+  console.log("store", store);
+
   if (!store) {
     throw new Error("No store provided to state modifier.");
   }
