@@ -62,7 +62,10 @@ const callModel = async (
 ) => {
   const { messages } = state;
   const response = await boundModel.invoke(messages, config);
-  return { messages: [response] };
+  return { 
+    messages: [response],
+    myList: { type: "keep", from: -5, to: undefined }
+  };
 };
 
 const workflow = createReactAgent({

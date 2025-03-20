@@ -1,7 +1,7 @@
 import llm from "./llm-call.js";
 import { toolNode, tools } from "./tools.js";
 import { END, START, StateGraph, MemorySaver } from "@langchain/langgraph";
-import { AIMessage } from "@langchain/core/messages";
+import { AIMessage, BaseMessage } from "@langchain/core/messages";
 import { RunnableConfig } from "@langchain/core/runnables";
 import { GraphState } from "./state.js";
 
@@ -20,12 +20,17 @@ const routeMessage = (state: typeof GraphState.State) => {
   return "tools";
 };
 
+const filterMessages = (messages: BaseMessage[]): BaseMessage[] => {
+  // This is very simple helper function which only ever uses the last 5 messages
+  return messages.slice(-5);
+}
+
 const callModel = async (
   state: typeof GraphState.State,
   config?: RunnableConfig,
 ) => {
   const { messages } = state;
-  const response = await boundModel.invoke(messages, config);
+  const response = await boundModel.invoke(filterMessages(messages), config);
   return { messages: [response] };
 };
 
