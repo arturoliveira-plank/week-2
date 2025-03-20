@@ -17,7 +17,7 @@ export const POST = async (req: Request) => {
 
     // Use the provided threadId or generate a new one
     const currentThreadId = threadId || uuidv4();
-
+    console.log('currentThreadId', currentThreadId);
     const result = await graph.invoke({
       messages: [new HumanMessage(message)],
     }, {

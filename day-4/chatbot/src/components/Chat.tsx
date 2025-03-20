@@ -14,6 +14,12 @@ export default function Chat() {
   });
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  useEffect(() => {
+    if (state.threads.length === 0) {
+      createNewChat();
+    }
+  }, []);
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
