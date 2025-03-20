@@ -24,7 +24,8 @@
     "day_2_loops_with_branches": "./apps/agents/src/day-2/recursion-limit/loops-with-branches/graph.ts:graph",
     "day_2_exercise_1": "./apps/agents/src/day-2/branching/exercise-1/graph.ts:graph",
     "day_3_persistence": "./apps/agents/src/day-3/persistence/graph.ts:graph",
-    "day_4_short_term_filtering": "./apps/agents/src/day-4/short-term/filtering/graph.ts:graph"
+    "day_4_short_term_filtering": "./apps/agents/src/day-4/short-term/filtering/graph.ts:graph",
+    "day_4_short_term_summarizing": "./apps/agents/src/day-4/short-term/summarizing/graph.ts:graph"
   },
   "env": ".env"
 }
