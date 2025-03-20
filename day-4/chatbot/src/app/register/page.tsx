@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useAuth } from '@/components/AuthContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
@@ -18,10 +18,9 @@ export default function Register() {
       await signUp(email, password);
       router.push('/dashboard');
     } catch (error) {
-      setError('Failed to create an account');
+      setError('Failed to create account');
     }
   };
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">

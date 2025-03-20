@@ -25,31 +25,47 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     // Check active sessions and sets the user
     supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
+      if (session?.user) {
+        setUser(session.user);
+        localStorage.setItem('supabaseUID', session.user.id);
+      }
       setLoading(false);
     });
 
     // Listen for changes on auth state
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
+      if (session?.user) {
+        setUser(session.user);
+        localStorage.setItem('supabaseUID', session.user.id);
+      } else {
+        setUser(null);
+        localStorage.removeItem('supabaseUID');
+      }
     });
 
     return () => subscription.unsubscribe();
   }, []);
 
   const signUp = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signUp({ email, password });
+    const { error, data } = await supabase.auth.signUp({ email, password });
     if (error) throw error;
+    if (data.user) {
+      localStorage.setItem('supabaseUID', data.user.id);
+    }
   };
 
   const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { error, data } = await supabase.auth.signInWithPassword({ email, password });
     if (error) throw error;
+    if (data.user) {
+      localStorage.setItem('supabaseUID', data.user.id);
+    }
   };
 
   const signOut = async () => {
     const { error } = await supabase.auth.signOut();
     if (error) throw error;
+    localStorage.removeItem('supabaseUID');
   };
 
   return (
