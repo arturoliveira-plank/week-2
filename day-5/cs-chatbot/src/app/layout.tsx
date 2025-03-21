@@ -35,7 +35,7 @@ export default function RootLayout({
                 {/* Footer */}
                 <footer className="mt-auto py-6">
                   <div className="container mx-auto px-4 text-center text-sm text-gray-600 dark:text-gray-400">
-                    © {new Date().getFullYear()} Your App. Made with ❤️
+                    © {new Date().getFullYear()}
                   </div>
                 </footer>
               </div>

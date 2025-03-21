@@ -16,7 +16,7 @@ export default function Register() {
     e.preventDefault();
     try {
       await signUp(email, password);
-      router.push('/dashboard');
+      router.push('/');
     } catch (error) {
       setError('Failed to create account');
     }

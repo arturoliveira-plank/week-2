@@ -261,7 +261,7 @@ export default function Chat() {
             value={state.currentMessage}
             onChange={(e) => setState(prev => ({ ...prev, currentMessage: e.target.value }))}
             placeholder="Type your message..."
-            className="flex-1 px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="flex-1 px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black placeholder-gray-400"
             disabled={state.isLoading}
           />
           <button

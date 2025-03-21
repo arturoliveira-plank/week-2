@@ -29,7 +29,7 @@ export default function AuthForm({ view }: AuthFormProps) {
       } else {
         await signIn(email, password);
       }
-      router.push('/dashboard');
+      router.push('/');
     } catch (error) {
       setError(error instanceof Error ? error.message : 'An error occurred');
     } finally {

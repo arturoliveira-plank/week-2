@@ -40,8 +40,6 @@ export default function Header() {
 
           {/* Navigation */}
           <div className="hidden md:flex items-center space-x-8">
-            <NavLink href="/dashboard">Dashboard</NavLink>
-            <NavLink href="/features">Features</NavLink>
             {user ? (
               <div className="flex items-center space-x-4">
                 <div className="relative group">
