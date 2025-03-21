@@ -3,9 +3,33 @@ import { graph } from '../../../model/graph';
 import { StateAnnotation } from '../../../model/state';
 import { HumanMessage } from '@langchain/core/messages';
 import { v4 as uuidv4 } from 'uuid';
+import { createClient } from '@supabase/supabase-js';
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
 
 export const POST = async (req: Request) => {
   try {
+    // Get the authorization header
+    const authHeader = req.headers.get('authorization');
+    if (!authHeader) {
+      return NextResponse.json(
+        { error: 'No authorization header' },
+        { status: 401 }
+      );
+    }
+
+    // Verify the session
+    const { data: { user }, error } = await supabase.auth.getUser(authHeader);
+    if (error || !user) {
+      return NextResponse.json(
+        { error: 'Invalid or expired session' },
+        { status: 401 }
+      );
+    }
+
     const { message, threadId } = await req.json();
 
     if (!message || typeof message !== 'string') {

@@ -4,10 +4,14 @@ import { useState, useRef, useEffect } from 'react';
 import { Message, ChatState, ChatThread } from '@/types/chat';
 import { v4 as uuidv4 } from 'uuid';
 import { saveThread, getThreads, getThread, supabase } from '@/lib/supabase';
+import { useAuth } from '@/contexts/AuthContext';
+import { useRouter } from 'next/navigation';
 
 const LOCAL_STORAGE_KEY = 'chat_threads';
 
 export default function Chat() {
+  const { user, loading } = useAuth();
+  const router = useRouter();
   const [state, setState] = useState<ChatState>({
     messages: [],
     currentMessage: '',
@@ -17,16 +21,35 @@ export default function Chat() {
   });
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push('/login');
+    }
+  }, [user, loading, router]);
+
+  // Show loading state while checking authentication
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <div className="flex items-center gap-2">
+          <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+          <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+          <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+        </div>
+      </div>
+    );
+  }
+
+  // Don't render anything if not authenticated
+  if (!user) {
+    return null;
+  }
+
   // Load threads from Supabase on component mount
   useEffect(() => {
     const loadThreads = async () => {
       try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) {
-          console.error('No user logged in');
-          return;
-        }
-
         const threads = await getThreads();
         if (threads && threads.length > 0) {
           setState(prev => ({
@@ -123,10 +146,17 @@ export default function Chat() {
     setState(prev => ({ ...prev, isLoading: true }));
 
     try {
+      // Get the current session
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        throw new Error('No active session');
+      }
+
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': session.access_token,
         },
         body: JSON.stringify({
           message: state.currentMessage,
