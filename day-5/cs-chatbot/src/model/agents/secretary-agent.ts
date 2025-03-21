@@ -1,32 +1,57 @@
 import { z } from "zod";
-import { zodToJsonSchema } from "zod-to-json-schema"; // Unused here, but kept for completeness
 import { StateAnnotation } from "../state";
 import llm from "../llm-call";
 import { CATEGORIZATION_SYSTEM_TEMPLATE, CATEGORIZATION_HUMAN_TEMPLATE, SYSTEM_TEMPLATE } from "../prompts";
-export const initialSupport = async (state: typeof StateAnnotation.State) => {
+import { BaseMessage, AIMessage } from "@langchain/core/messages"; // Import necessary types
 
-  // Get the support response   
+export const initialSupport = async (state: typeof StateAnnotation.State) => {
+  // Get the latest message (typed as BaseMessage)
+  const latestMessage: BaseMessage = state.messages[state.messages.length - 1];
+  
+  // Safely extract content (handle string or complex content)
+  const latestMessageContent: string = typeof latestMessage.content === "string"
+    ? latestMessage.content
+    : Array.isArray(latestMessage.content)
+      ? latestMessage.content.map(item => {
+          if (typeof item === "object" && item !== null && "text" in item) {
+            return item.text || "";
+          }
+          return ""; // Fallback for items without text property
+        }).join(" ") // Handle complex content
+      : String(latestMessage.content); // Fallback for other types
+
+  // Logic to save a memory if the user mentions a preference or fact
+  let toolCalls: { name: string; args: { content: string } }[] = [];
+  if (latestMessageContent.toLowerCase().includes("remember") || latestMessageContent.toLowerCase().includes("i like")) {
+    const memoryContent = `User said: "${latestMessageContent}"`;
+    toolCalls = [{
+      name: "upsert_memory",
+      args: { content: memoryContent },
+    }];
+  }
+
+  // Get the support response
   console.log("using SUPPORT AGENT", state.messages);
   const supportResponse = await llm.invoke([
     { role: "system", content: SYSTEM_TEMPLATE },
     ...state.messages,
   ]);
 
-
   // Get the categorization response
   console.log("using SECRETARY AGENT", state.messages);
   const categorizationResponse = await llm.invoke(
     [
       { role: "system", content: CATEGORIZATION_SYSTEM_TEMPLATE },
-      // Include the support response in the conversation history
       ...state.messages,
-      { role: "assistant", content: supportResponse.content as string }, // Assuming supportResponse has a content field
+      { role: "assistant", content: supportResponse.content as string },
       { role: "user", content: CATEGORIZATION_HUMAN_TEMPLATE },
     ],
     {
       response_format: { type: "json_object" },
     }
   );
+
+  console.log("categorizationResponseeee", categorizationResponse);
 
   // Define the schema for validation
   const schema = z.object({
@@ -36,13 +61,13 @@ export const initialSupport = async (state: typeof StateAnnotation.State) => {
   // Handle the categorization response
   let categorizationOutput;
   try {
-    // Assuming categorizationResponse is an object with a `content` field that’s a JSON string
-    if (typeof categorizationResponse.content === "string") {
+    // Check if the content is a string and not empty
+    if (typeof categorizationResponse.content === "string" && categorizationResponse.content.trim() !== "") {
       console.log("categorizationResponse.content", categorizationResponse.content);
       categorizationOutput = schema.parse(JSON.parse(categorizationResponse.content));
     } else {
-      // If the response is already an object, parse it directly
-      categorizationOutput = schema.parse(categorizationResponse);
+      console.error("Empty or invalid categorization response content");
+      throw new Error("Empty or invalid categorization response content");
     }
   } catch (error) {
     console.error("Failed to parse categorization response:", error);
@@ -51,7 +76,8 @@ export const initialSupport = async (state: typeof StateAnnotation.State) => {
 
   // Return the updated state
   return {
-    messages: [supportResponse], // Assuming supportResponse is a message object
+    messages: [supportResponse], // Ensure this is a BaseMessage or compatible
     nextRepresentative: categorizationOutput.nextRepresentative,
+    ...(toolCalls.length > 0 && { tool_calls: toolCalls }), // Add tool calls if present
   };
 };

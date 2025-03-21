@@ -5,6 +5,7 @@ import { LangGraphRunnableConfig } from "@langchain/langgraph";
 import { tool } from "@langchain/core/tools";
 import { z } from "zod";
 import { v4 as uuidv4 } from "uuid";
+
 const searchTool = new TavilySearchResults({
   apiKey: process.env.TAVILY_API_KEY,
 });
@@ -17,11 +18,13 @@ const upsertMemoryTool = tool(async (
   if (!store) {
     throw new Error("No store provided to tool.");
   }
+  console.log("Storing content:", content);
   await store.put(
     ["user_123", "memories"],
     uuidv4(), // give each memory its own unique ID
     { text: content }
   );
+  console.log("Memory stored successfully.");
   return "Stored memory.";
 }, {
   name: "upsert_memory",
