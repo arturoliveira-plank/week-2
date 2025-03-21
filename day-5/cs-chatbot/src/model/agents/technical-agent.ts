@@ -1,10 +1,9 @@
 import llm from "../llm-call";
+import { SYSTEM_TEMPLATE_TECHNICAL } from "../prompts";
 import { StateAnnotation } from "../state";
 
 export const technicalSupport = async (state: typeof StateAnnotation.State) => {
-    const SYSTEM_TEMPLATE =
-      `You are an expert at diagnosing technical computer issues. You work for a company called LangCorp that sells computers.
-  Help the user to the best of your ability, but be concise in your responses.`;
+
   
     let trimmedHistory = state.messages;
     // Make the user's question the most recent message in the history.
@@ -12,11 +11,13 @@ export const technicalSupport = async (state: typeof StateAnnotation.State) => {
     if (trimmedHistory.at(-1)?._getType() === "ai") {
       trimmedHistory = trimmedHistory.slice(0, -1);
     }
+
+    console.log("using TECHNICAL AGENT", trimmedHistory);
   
     const response = await llm.invoke([
       {
         role: "system",
-        content: SYSTEM_TEMPLATE,
+        content: SYSTEM_TEMPLATE_TECHNICAL,
       },
       ...trimmedHistory,
     ]);

@@ -2,15 +2,9 @@ import { StateAnnotation } from "../state";
 import llm from "../llm-call";
 import { z } from "zod";
 import { zodToJsonSchema } from "zod-to-json-schema"; // Kept for potential future use
+import { CATEGORIZATION_HUMAN_TEMPLATE_BILLING, SYSTEM_TEMPLATE_BILLING  } from "../prompts";
 
 export const billingSupport = async (state: typeof StateAnnotation.State) => {
-  const SYSTEM_TEMPLATE = `You are an expert billing support specialist for LangCorp, a company that sells computers.
-Help the user to the best of your ability, but be concise in your responses.
-You have the ability to authorize refunds, which you can do by transferring the user to another agent who will collect the required information.
-If you do, assume the other agent has all necessary information about the customer and their order.
-You do not need to ask the user for more information.
-
-Help the user to the best of your ability, but be concise in your responses.`;
 
   // Trim the history to remove the last AI message, if present, to keep focus on the user's question
   let trimmedHistory = state.messages;
@@ -19,10 +13,11 @@ Help the user to the best of your ability, but be concise in your responses.`;
   }
 
   // Get the billing support response
+  console.log("using BILLING AGENT", trimmedHistory);
   const billingRepResponse = await llm.invoke([
     {
       role: "system",
-      content: SYSTEM_TEMPLATE,
+      content: SYSTEM_TEMPLATE_BILLING,
     },
     ...trimmedHistory,
   ]);
@@ -31,17 +26,7 @@ Help the user to the best of your ability, but be concise in your responses.`;
   const CATEGORIZATION_SYSTEM_TEMPLATE = `Your job is to detect whether a billing support representative wants to refund the user.`;
 
   // Categorization user prompt
-  const CATEGORIZATION_HUMAN_TEMPLATE = `The following text is a response from a customer support representative.
-Extract whether they want to refund the user or not.
-Respond with a JSON object containing a single key called "nextRepresentative" with one of the following values:
-- "REFUND" if they want to refund the user
-- "RESPOND" if they do not want to refund the user
-
-Here is the text:
-
-<text>
-${billingRepResponse.content}
-</text>`;
+  const CATEGORIZATION_HUMAN_TEMPLATE = CATEGORIZATION_HUMAN_TEMPLATE_BILLING(billingRepResponse.content as string);
 
   // Get the categorization response
   const categorizationResponse = await llm.invoke(
