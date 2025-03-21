@@ -33,7 +33,7 @@ export default function Header() {
             className="relative group"
           >
             <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 to-purple-500">
-              Chatbot
+              Customer Support Chatbot
             </span>
             <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-indigo-500 to-purple-500 transition-all group-hover:w-full"></span>
           </Link>
