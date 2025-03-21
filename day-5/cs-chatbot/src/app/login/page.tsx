@@ -8,7 +8,7 @@ import Link from 'next/link';
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
   const { signIn } = useAuth();
   const router = useRouter();
 
@@ -17,8 +17,8 @@ export default function LoginPage() {
     try {
       await signIn(email, password);
       router.push('/');
-    } catch (error) {
-      setError('Failed to sign in');
+    } catch (err) {
+      setErrorMessage(err instanceof Error ? err.message : 'Failed to sign in');
     }
   };
 
@@ -28,16 +28,16 @@ export default function LoginPage() {
         <div className="text-center mb-8">
           <h2 className="text-3xl font-bold text-gray-900">Welcome back</h2>
           <p className="mt-2 text-sm text-gray-600">
-            Don't have an account?{' '}
+            Don&apos;t have an account?{' '}
             <Link href="/register" className="text-indigo-600 hover:text-indigo-500 font-medium">
               Sign up
             </Link>
           </p>
         </div>
 
-        {error && (
+        {errorMessage && (
           <div className="mb-4 bg-red-50 text-red-800 p-3 rounded-md text-sm">
-            {error}
+            {errorMessage}
           </div>
         )}
 

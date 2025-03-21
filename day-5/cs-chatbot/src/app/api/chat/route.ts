@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 import { graph } from '../../../model/graph';
-import { StateAnnotation } from '../../../model/state';
 import { HumanMessage } from '@langchain/core/messages';
 import { v4 as uuidv4 } from 'uuid';
 import { createClient } from '@supabase/supabase-js';

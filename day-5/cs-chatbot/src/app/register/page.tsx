@@ -8,7 +8,7 @@ import Link from 'next/link';
 export default function Register() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
   const { signUp } = useAuth();
   const router = useRouter();
 
@@ -17,8 +17,8 @@ export default function Register() {
     try {
       await signUp(email, password);
       router.push('/');
-    } catch (error) {
-      setError('Failed to create account');
+    } catch (err) {
+      setErrorMessage(err instanceof Error ? err.message : 'An unknown error occurred');
     }
   };
 
@@ -35,9 +35,9 @@ export default function Register() {
           </p>
         </div>
 
-        {error && (
+        {errorMessage && (
           <div className="mb-4 bg-red-50 text-red-800 p-3 rounded-md text-sm">
-            {error}
+            {errorMessage}
           </div>
         )}
 

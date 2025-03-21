@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
+import { Message } from '@/types/chat';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
@@ -13,7 +14,7 @@ export interface DatabaseThread {
   id: string;
   user_id: string;
   title: string;
-  messages: any[];
+  messages: Message[];
   created_at: string;
   updated_at: string;
 }

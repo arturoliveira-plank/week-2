@@ -103,7 +103,7 @@ export default function AuthForm({ view }: AuthFormProps) {
         <div className="text-sm text-center">
           {view === 'sign-in' ? (
             <Link href="/register" className="font-medium text-indigo-600 hover:text-indigo-500">
-              Don't have an account? Sign up
+              Don&apos;t have an account? Sign up
             </Link>
           ) : (
             <Link href="/login" className="font-medium text-indigo-600 hover:text-indigo-500">

@@ -21,31 +21,6 @@ export default function Chat() {
   });
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Redirect to login if not authenticated
-  useEffect(() => {
-    if (!loading && !user) {
-      router.push('/login');
-    }
-  }, [user, loading, router]);
-
-  // Show loading state while checking authentication
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-full">
-        <div className="flex items-center gap-2">
-          <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-          <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-          <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
-        </div>
-      </div>
-    );
-  }
-
-  // Don't render anything if not authenticated
-  if (!user) {
-    return null;
-  }
-
   // Load threads from Supabase on component mount
   useEffect(() => {
     const loadThreads = async () => {
@@ -70,21 +45,52 @@ export default function Chat() {
         createNewChat();
       }
     };
-    loadThreads();
-  }, []);
+    if (user) {
+      loadThreads();
+    }
+  }, [user]);
 
   // Save threads to local storage whenever they change
   useEffect(() => {
-    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(state.threads));
-  }, [state.threads]);
+    if (user) {
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(state.threads));
+    }
+  }, [state.threads, user]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
   useEffect(() => {
-    scrollToBottom();
-  }, [state.messages]);
+    if (user) {
+      scrollToBottom();
+    }
+  }, [state.messages, user]);
+
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push('/login');
+    }
+  }, [user, loading, router]);
+
+  // Show loading state while checking authentication
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <div className="flex items-center gap-2">
+          <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+          <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+          <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+        </div>
+      </div>
+    );
+  }
+
+  // Don't render anything if not authenticated
+  if (!user) {
+    return null;
+  }
 
   const createNewChat = async () => {
     const { data: { user } } = await supabase.auth.getUser();
