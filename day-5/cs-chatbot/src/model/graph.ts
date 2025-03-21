@@ -1,12 +1,10 @@
-import { StateGraph } from "@langchain/langgraph";
+import { MemorySaver, StateGraph } from "@langchain/langgraph";
 import { StateAnnotation } from "./state";
 import { handleRefund } from "./agents/refund-agent";
 import { billingSupport } from "./agents/billing-agent";
-import { initialSupport } from "./agents/secretary-agent";
 import { technicalSupport } from "./agents/technical-agent";
-import { MemorySaver } from "@langchain/langgraph";
-
-const memory = new MemorySaver();
+import { initialSupport } from "./agents/secretary-agent";
+import { checkpointer } from "./postgres";
 
 let builder = new StateGraph(StateAnnotation)
   .addNode("initial_support", initialSupport)
@@ -33,6 +31,7 @@ let builder = new StateGraph(StateAnnotation)
   .addEdge("technical_support", "__end__")
   .addConditionalEdges("billing_support", async (state) => {
     if (state.nextRepresentative.includes("REFUND")) {
+      console.log("refund authorized2", state.refundAuthorized);
       return "refund";
     } else {
       return "__end__";
@@ -43,4 +42,4 @@ let builder = new StateGraph(StateAnnotation)
   })
   .addEdge("handle_refund", "__end__");
 
-  export const graph = builder.compile({checkpointer: memory});
+  export const graph = builder.compile({checkpointer});
