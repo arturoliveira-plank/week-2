@@ -1,8 +1,7 @@
+import { z } from "zod";
 import { StateAnnotation } from "../state";
 import llm from "../llm-call";
-import { z } from "zod";
-import { zodToJsonSchema } from "zod-to-json-schema"; // Kept for potential future use
-import { CATEGORIZATION_HUMAN_TEMPLATE_BILLING, SYSTEM_TEMPLATE_BILLING  } from "../prompts";
+import { CATEGORIZATION_SYSTEM_TEMPLATE, CATEGORIZATION_HUMAN_TEMPLATE_BILLING, SYSTEM_TEMPLATE_BILLING } from "../prompts";
 
 export const billingSupport = async (state: typeof StateAnnotation.State) => {
 
@@ -64,7 +63,7 @@ export const billingSupport = async (state: typeof StateAnnotation.State) => {
     console.error("Failed to parse categorization response:", error);
     throw new Error("Invalid categorization response format");
   }
-
+  console.log("nextRepresentative", categorizationOutput.nextRepresentative);
   return {
     messages: [billingRepResponse], // Wrap in array assuming state.messages expects an array
     nextRepresentative: categorizationOutput.nextRepresentative,

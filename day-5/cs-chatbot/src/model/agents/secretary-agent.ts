@@ -1,8 +1,8 @@
 import { z } from "zod";
-import { zodToJsonSchema } from "zod-to-json-schema"; // Unused here, but kept for completeness
 import { StateAnnotation } from "../state";
 import llm from "../llm-call";
 import { CATEGORIZATION_SYSTEM_TEMPLATE, CATEGORIZATION_HUMAN_TEMPLATE, SYSTEM_TEMPLATE } from "../prompts";
+
 export const initialSupport = async (state: typeof StateAnnotation.State) => {
 
   // Get the support response   
@@ -14,7 +14,7 @@ export const initialSupport = async (state: typeof StateAnnotation.State) => {
 
 
   // Get the categorization response
-  console.log("using SECRETARY AGENT", state.messages);
+  console.log("using Categorization AGENT", state.messages);
   const categorizationResponse = await llm.invoke(
     [
       { role: "system", content: CATEGORIZATION_SYSTEM_TEMPLATE },
@@ -36,7 +36,7 @@ export const initialSupport = async (state: typeof StateAnnotation.State) => {
   // Handle the categorization response
   let categorizationOutput;
   try {
-    // Assuming categorizationResponse is an object with a `content` field that’s a JSON string
+    // Assuming categorizationResponse is an object with a `content` field that's a JSON string
     if (typeof categorizationResponse.content === "string") {
       console.log("categorizationResponse.content", categorizationResponse.content);
       categorizationOutput = schema.parse(JSON.parse(categorizationResponse.content));
