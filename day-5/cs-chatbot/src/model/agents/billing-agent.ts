@@ -21,9 +21,6 @@ export const billingSupport = async (state: typeof StateAnnotation.State) => {
     ...trimmedHistory,
   ]);
 
-  // Categorization system prompt
-  const CATEGORIZATION_SYSTEM_TEMPLATE = `Your job is to detect whether a billing support representative wants to refund the user.`;
-
   // Categorization user prompt
   const CATEGORIZATION_HUMAN_TEMPLATE = CATEGORIZATION_HUMAN_TEMPLATE_BILLING(billingRepResponse.content as string);
 
