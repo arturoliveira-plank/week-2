@@ -1,7 +1,4 @@
-import { ChatOpenAI } from "@langchain/openai";
 import { PostgresSaver } from "@langchain/langgraph-checkpoint-postgres";
-import { createReactAgent } from "@langchain/langgraph/prebuilt";
-import { tools } from "./tools";
 
 import pg from "pg";
 
@@ -12,7 +9,6 @@ const pool = new Pool({
 });
 
 const checkpointer = new PostgresSaver(pool);
-
 
 await checkpointer.setup();
 

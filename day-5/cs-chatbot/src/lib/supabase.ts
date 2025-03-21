@@ -8,3 +8,44 @@ if (!supabaseUrl || !supabaseAnonKey) {
 }
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+export interface DatabaseThread {
+  id: string;
+  user_id: string;
+  title: string;
+  messages: any[];
+  created_at: string;
+  updated_at: string;
+}
+
+export async function saveThread(thread: DatabaseThread) {
+  const { data, error } = await supabase
+    .from('threads')
+    .upsert(thread)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+}
+
+export async function getThreads() {
+  const { data, error } = await supabase
+    .from('threads')
+    .select('*')
+    .order('updated_at', { ascending: false });
+
+  if (error) throw error;
+  return data;
+}
+
+export async function getThread(id: string) {
+  const { data, error } = await supabase
+    .from('threads')
+    .select('*')
+    .eq('id', id)
+    .single();
+
+  if (error) throw error;
+  return data;
+}

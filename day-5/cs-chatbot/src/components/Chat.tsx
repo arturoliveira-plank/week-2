@@ -3,6 +3,9 @@
 import { useState, useRef, useEffect } from 'react';
 import { Message, ChatState, ChatThread } from '@/types/chat';
 import { v4 as uuidv4 } from 'uuid';
+import { saveThread, getThreads, getThread, supabase } from '@/lib/supabase';
+
+const LOCAL_STORAGE_KEY = 'chat_threads';
 
 export default function Chat() {
   const [state, setState] = useState<ChatState>({
@@ -14,11 +17,43 @@ export default function Chat() {
   });
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  // Load threads from Supabase on component mount
   useEffect(() => {
-    if (state.threads.length === 0) {
-      createNewChat();
-    }
+    const loadThreads = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+          console.error('No user logged in');
+          return;
+        }
+
+        const threads = await getThreads();
+        if (threads && threads.length > 0) {
+          setState(prev => ({
+            ...prev,
+            threads: threads.map(thread => ({
+              id: thread.id,
+              title: thread.title,
+              messages: thread.messages,
+              createdAt: thread.created_at,
+              updatedAt: thread.updated_at,
+            })),
+          }));
+        } else {
+          createNewChat();
+        }
+      } catch (error) {
+        console.error('Error loading threads:', error);
+        createNewChat();
+      }
+    };
+    loadThreads();
   }, []);
+
+  // Save threads to local storage whenever they change
+  useEffect(() => {
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(state.threads));
+  }, [state.threads]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -28,7 +63,13 @@ export default function Chat() {
     scrollToBottom();
   }, [state.messages]);
 
-  const createNewChat = () => {
+  const createNewChat = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      console.error('No user logged in');
+      return;
+    }
+
     const newThread: ChatThread = {
       id: uuidv4(),
       title: 'New Chat',
@@ -37,24 +78,41 @@ export default function Chat() {
       updatedAt: new Date().toISOString(),
     };
 
-    setState(prev => ({
-      ...prev,
-      threads: [...prev.threads, newThread],
-      currentThreadId: newThread.id,
-      messages: [],
-      currentMessage: '',
-    }));
-  };
+    try {
+      await saveThread({
+        id: newThread.id,
+        user_id: user.id,
+        title: newThread.title,
+        messages: newThread.messages,
+        created_at: newThread.createdAt,
+        updated_at: newThread.updatedAt,
+      });
 
-  const switchThread = (threadId: string) => {
-    const thread = state.threads.find(t => t.id === threadId);
-    if (thread) {
       setState(prev => ({
         ...prev,
-        currentThreadId: threadId,
-        messages: thread.messages,
+        threads: [...prev.threads, newThread],
+        currentThreadId: newThread.id,
+        messages: [],
         currentMessage: '',
       }));
+    } catch (error) {
+      console.error('Error creating new chat:', error);
+    }
+  };
+
+  const switchThread = async (threadId: string) => {
+    try {
+      const thread = await getThread(threadId);
+      if (thread) {
+        setState(prev => ({
+          ...prev,
+          currentThreadId: threadId,
+          messages: thread.messages,
+          currentMessage: '',
+        }));
+      }
+    } catch (error) {
+      console.error('Error switching thread:', error);
     }
   };
 
@@ -100,6 +158,24 @@ export default function Chat() {
         return thread;
       });
 
+      // Save the updated thread to Supabase
+      const currentThread = updatedThreads.find(t => t.id === state.currentThreadId);
+      if (currentThread) {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+          throw new Error('No user logged in');
+        }
+
+        await saveThread({
+          id: currentThread.id,
+          user_id: user.id,
+          title: currentThread.title,
+          messages: currentThread.messages,
+          created_at: currentThread.createdAt,
+          updated_at: currentThread.updatedAt,
+        });
+      }
+
       setState(prev => ({
         ...prev,
         messages: newMessages,
@@ -117,16 +193,28 @@ export default function Chat() {
 
   const currentThread = state.threads.find(t => t.id === state.currentThreadId);
 
-  const deleteCurrentChat = () => {
+  const deleteCurrentChat = async () => {
     if (!currentThread) return;
     
-    setState(prev => ({
-      ...prev,
-      threads: prev.threads.filter(t => t.id !== currentThread.id),
-      currentThreadId: null,
-      messages: [],
-      currentMessage: '',
-    }));
+    try {
+      // Delete from Supabase
+      const { error } = await supabase
+        .from('threads')
+        .delete()
+        .eq('id', currentThread.id);
+
+      if (error) throw error;
+
+      setState(prev => ({
+        ...prev,
+        threads: prev.threads.filter(t => t.id !== currentThread.id),
+        currentThreadId: null,
+        messages: [],
+        currentMessage: '',
+      }));
+    } catch (error) {
+      console.error('Error deleting chat:', error);
+    }
   };
 
   return (
